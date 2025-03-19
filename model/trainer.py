@@ -90,7 +90,7 @@ class BertTrainer:
     def load_checkpoint(self, model_file):
         print(f"Restoring model {model_file}")
         checkpoint = torch.load(model_file)
-        self.current_epoch = checkpoint['epoch']
+        self.current_epoch = checkpoint['epoch']+1
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         print("Model is restored.")
