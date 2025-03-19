@@ -1,54 +1,3 @@
-# Embedding学习笔记
-
-这是一个Embedding模型学习笔记，实现了一个简易的基于BERT的Embedding模型，用于实现语义相似度相关任务
-
-### 1.训练tokenizer
-
-Embedding模型常与tokenizer搭配使用，输入字符串先由tokenizer转换为id列表，Embedding模型再将id列表转为词向量。
-
-训练tokenizer的过程实质上是建立词汇表，即token和id的一一对应关系，一般流程如下：
-
-- 建立初始词汇表，如字节值为0-255的字符，即ASCII码表
-- 对训练语料用正则表达式进行分词，并将每个分块转为UTF-8编码的字节列表
-- 遍历所有列表，找出出现最多的相邻对，将其合并作为新词汇，并将字节列表中的该相邻对用新词汇的id替代
-- 重复上述过程直至词汇表数量到达预设值
-
-以字符串“hi! This apple belongs to him”为例进行说明，将其分词得到
-
-```json
-['hi', '!', ' This', ' apple', ' belongs', ' to', ' him']
-```
-
-将分词结果转为UTF-8编码的字节列表得到
-
-```json
-[[104, 105], [33], [32, 84, 104, 105, 115], [32, 97, 112, 112, 108, 101], [32, 98, 101, 108, 111, 110, 103, 115], [32, 116, 111], [32, 104, 105, 109]]
-```
-
-列表中(104,105)，即hi出现最多，作为词汇表下一个新词汇
-
-词汇id自增生成，假设其id为256，则更新字节列表，用256代替所有(104,105)得到
-
-```json
- [[256], [33], [32, 84, 256, 115], [32, 97, 112, 112, 108, 101], [32, 98, 101, 108, 111, 110, 103, 115], [32, 116, 111], [32, 256, 109]]
-```
-
-### 2.训练embedding模型
-
-embedding模型的作用是将一个字符串转为一个向量，一般为transformer encoder only，大部分Embedding模型都是基于BERT模型的改进版本，这里实现一个简易的基于BERT的Embedding模型
-
-其中Tokenizer用了开源的bert-base-chinese，数据集使用ChineseCSTS
-
-Tokenizer可在huggingface下载：
-
-```shell
-cd embedding
-huggingface-cli download --resume-download google-bert/bert-base-chinese --local-dir ./google-bert/bert-base-chinese
-```
-
-模型定义如下：
-
-```python
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
@@ -247,6 +196,3 @@ class BERTModel(nn.Module):
         for block in self.transformer_blocks:
             x = block(x)
         return torch.mean(x, dim=1)
-
-```
-
