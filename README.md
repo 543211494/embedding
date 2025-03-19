@@ -15,7 +15,7 @@ Embedding模型常与tokenizer搭配使用，输入字符串先由tokenizer转�
 
 以字符串“hi! This apple belongs to him”为例进行说明，将其分词得到
 
-```json
+```
 ['hi', '!', ' This', ' apple', ' belongs', ' to', ' him']
 ```
 
