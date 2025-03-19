@@ -13,22 +13,22 @@ class BERTEmbedding:
         self.model.to(self.device)
 
     def cos_similarity(self, sentence1: str, sentence2: str) -> list[float]:
-        embedding1 = self.tokenizer.encode(sentence1)
+        embedding1 = self.tokenizer.encode(sentence1)[1:-1]
         embedding1 = self.model(torch.tensor([embedding1]))
-        embedding2 = self.tokenizer.encode(sentence2)
+        embedding2 = self.tokenizer.encode(sentence2)[1:-1]
         embedding2 = self.model(torch.tensor([embedding2]))
         cos_sim = nn.functional.cosine_similarity(embedding1, embedding2)
         return cos_sim.item()
 
     def embed_query(self, sentence: str) -> float:
-        embedding = self.tokenizer.encode(sentence)
+        embedding = self.tokenizer.encode(sentence)[1:-1]
         embedding = self.model(torch.tensor([embedding])).squeeze(0)
         return embedding.tolist()
 
 
 
 if __name__ == "__main__":
-    embedding = BERTEmbedding(model_path="./bert_checkpoints/model_bert_embedding_1024_6_epoch_2.pt",
+    embedding = BERTEmbedding(model_path="./bert_checkpoints/model_bert_embedding_512_8_epoch_9.pt",
                               tokenizer_path='../google-bert/bert-base-chinese')
     print(embedding.embed_query("她洗净了一件衣服。"))
     print(embedding.embed_query("她把那件衣服洗干净了。"))

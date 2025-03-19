@@ -27,14 +27,14 @@ class BertTrainer:
 
     def train(self):
         print(f"Begin epoch {self.current_epoch}")
-        model.train()
+        self.model.train()
         for epoch in range(self.epochs):
             total_loss = 0
             progress_bar = tqdm(self.loader, desc=f"Epoch {epoch + 1}")
             for batch in progress_bar:
-                embeddings1 = [self.tokenizer.encode(sentence1) for sentence1 in batch["sentence1"]]
-                embeddings2 = [self.tokenizer.encode(sentence2) for sentence2 in batch["sentence2"]]
-                scores = batch["score"].to(device)
+                embeddings1 = [self.tokenizer.encode(sentence1)[1:-1] for sentence1 in batch["sentence1"]]
+                embeddings2 = [self.tokenizer.encode(sentence2)[1:-1] for sentence2 in batch["sentence2"]]
+                scores = batch["score"].to(self.device)
 
                 embeddings1 = [self.model(torch.tensor([embedding])).squeeze(0) for embedding in embeddings1]
                 embeddings2 = [self.model(torch.tensor([embedding])).squeeze(0) for embedding in embeddings2]
@@ -101,13 +101,13 @@ if __name__ == "__main__":
     # 模型参数
     batch_size = 16
     vocab_size = len(tokenizer.vocab)
-    d_model = 1024
+    d_model = 768
     n_heads = 16
     head_size = d_model // n_heads
     n_layers = 12
     context_length = 256
     dropout = 0.1
-    epochs = 3
+    epochs = 10
     learning_rate = 1e-4
     # transformer块数量
     num_blocks = 6
